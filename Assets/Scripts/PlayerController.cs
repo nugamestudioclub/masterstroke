@@ -38,6 +38,12 @@ public class PlayerController : MonoBehaviour
     public Timer timerPrefab; //is there a reason why this is public?
     private Timer localTimer;
 
+    float distToGround;
+
+    void Start()
+    {
+        distToGround = GetComponent<CapsuleCollider2D>().bounds.extents.y;
+    }
 
     // Update is called once per frame
     void Update()
@@ -82,8 +88,8 @@ public class PlayerController : MonoBehaviour
             case PlayerState.MoveState:
                 float moveDir = Input.GetAxis("Horizontal");
                 rb.velocity = new Vector2(MaxMagnitude(rb.velocity.x, moveDir * maxSpeed), rb.velocity.y);
-                
-                if (Input.GetButtonDown("Jump"))
+
+                if (Input.GetButtonDown("Jump") && this.IsGrounded())
                 {
                     rb.velocity = new Vector2(rb.velocity.x, jumpSpeed);
                 }
@@ -104,6 +110,13 @@ public class PlayerController : MonoBehaviour
                 }
                 break;
         }
+    }
+
+
+    private bool IsGrounded()
+    {
+        Vector3 bottomPos = new Vector3(transform.position.x, transform.position.y - distToGround - 0.05f, transform.position.z);
+        return Physics2D.Raycast(bottomPos, -Vector2.up, 0.05f);
     }
 
 
