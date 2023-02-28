@@ -14,8 +14,8 @@ public class PlayerController : MonoBehaviour
         return f2;
     }
 
-    Rigidbody2D rb;
 
+    [Header("Movement Settings")]
     [SerializeField]
     float speed = 20.0f;
     [SerializeField]
@@ -26,20 +26,18 @@ public class PlayerController : MonoBehaviour
     float slashForce = 7.0f;
     [SerializeField]
     float slashDuration = .15f;
-    
 
-    public PlayerState state = PlayerState.MoveState;
+    [Header(" ")]
+
+    [SerializeField] private Rigidbody2D rb;
+
+    public PlayerState state = PlayerState.MoveState; //is there a reason why this is public?
 
     Vector2 clickPos;
 
-    public Timer timerPrefab;
+    public Timer timerPrefab; //is there a reason why this is public?
     private Timer localTimer;
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        rb = GetComponent<Rigidbody2D>();
-    }
 
     // Update is called once per frame
     void Update()
