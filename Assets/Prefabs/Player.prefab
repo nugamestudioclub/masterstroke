@@ -51,7 +51,7 @@ Rigidbody2D:
   m_LinearDrag: 0
   m_AngularDrag: 0.05
   m_GravityScale: 6
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 6200000, guid: e79322b3d3ca0da4dbae075b40c3f634, type: 2}
   m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 0
@@ -68,13 +68,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5e301af646a9f1949b80e3355bac17de, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  rb: {fileID: 6658287946935009701}
-  speed: 20
-  maxSpeed: 10
-  jumpSpeed: 10
-  slashForce: 10
-  slashDuration: 0.15
-  state: 0
+  _speed: 15
+  _jumpSpeed: 20
+  _slashForce: 25
+  _slashDuration: 0.1
   timerPrefab: {fileID: -3942510742144482141, guid: 9bb8d66f258887a44abbe3c811c17d4c, type: 3}
 --- !u!70 &5988202328447360764
 CapsuleCollider2D:

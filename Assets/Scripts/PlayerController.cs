@@ -17,32 +17,33 @@ public class PlayerController : MonoBehaviour
 
     [Header("Movement Settings")]
     [SerializeField]
-    float speed = 20.0f;
+    private float _speed = 15.0f;
     [SerializeField]
-    float maxSpeed = 10.0f;
+    private float _jumpSpeed = 20.0f;
     [SerializeField]
-    float jumpSpeed = 10.0f;
+    private float _slashForce = 25.0f;
     [SerializeField]
-    float slashForce = 7.0f;
-    [SerializeField]
-    float slashDuration = .15f;
+    private float _slashDuration = .10f;
 
     [Header(" ")]
 
-    [SerializeField] private Rigidbody2D rb;
+    private Rigidbody2D _rb;
 
-    public PlayerState state = PlayerState.MoveState; //is there a reason why this is public?
+    private PlayerState _state = PlayerState.MoveState; //is there a reason why this is public?
 
     Vector2 clickPos;
 
     public Timer timerPrefab; //is there a reason why this is public?
     private Timer localTimer;
 
-    float distToGround;
+    private float distToGround;
+
+    private bool _canSlash;
 
     void Start()
     {
         distToGround = GetComponent<CapsuleCollider2D>().bounds.extents.y;
+        _rb = GetComponent<Rigidbody2D>();
     }
 
     // Update is called once per frame
@@ -53,9 +54,9 @@ public class PlayerController : MonoBehaviour
 
     void changeState(PlayerState s)
     {
-        exitState(state);
-        state = s;
-        enterState(state);
+        exitState(_state);
+        _state = s;
+        enterState(_state);
     }
     
     void enterState(PlayerState s)
@@ -65,8 +66,9 @@ public class PlayerController : MonoBehaviour
             case PlayerState.SlashState:
                 localTimer = Instantiate(timerPrefab);
                 localTimer.transform.parent = transform;
-                localTimer.SetDuration(slashDuration);
+                localTimer.SetDuration(_slashDuration);
                 localTimer.TimerStart();
+                _canSlash = false;
                 break;
         }
     }
@@ -76,6 +78,7 @@ public class PlayerController : MonoBehaviour
         switch(s)
         {
             case PlayerState.SlashState:
+                _rb.velocity = Vector2.zero;
                 Destroy(localTimer.gameObject);
                 break;
         }
@@ -83,19 +86,23 @@ public class PlayerController : MonoBehaviour
 
     void updateState()
     {
-        switch(state)
+        switch(_state)
         {
             case PlayerState.MoveState:
                 float moveDir = Input.GetAxis("Horizontal");
-                rb.velocity = new Vector2(MaxMagnitude(rb.velocity.x, moveDir * maxSpeed), rb.velocity.y);
-
+                // rb.velocity = new Vector2(MaxMagnitude(rb.velocity.x, moveDir * maxSpeed), rb.velocity.y);
+                _rb.velocity = new Vector2(moveDir * _speed, _rb.velocity.y);
                 if (Input.GetButtonDown("Jump") && this.IsGrounded())
                 {
-                    rb.velocity = new Vector2(rb.velocity.x, jumpSpeed);
+                    _rb.velocity = new Vector2(_rb.velocity.x, _jumpSpeed);
                 }
                 
+                if(IsGrounded())
+                {
+                    _canSlash = true;
+                }
                 
-                if (Input.GetMouseButtonDown(0))
+                if (Input.GetMouseButtonDown(0) && _canSlash)
                 {
                     Vector3 mousePos = Input.mousePosition;
                     clickPos = transform.InverseTransformPoint(Camera.main.ScreenToWorldPoint(mousePos));
@@ -103,7 +110,7 @@ public class PlayerController : MonoBehaviour
                 }
                 break;
             case PlayerState.SlashState:
-                rb.velocity = clickPos.normalized * slashForce;
+                _rb.velocity = clickPos.normalized * _slashForce;
                 if (localTimer.TimerFinished()) 
                 {
                     changeState(PlayerState.MoveState);
