@@ -20,25 +20,33 @@ public class PlayerController : MonoBehaviour
     private float _speed = 15.0f;
     [SerializeField]
     private float _jumpSpeed = 20.0f;
-    [SerializeField]
-    private float _slashForce = 25.0f;
-    [SerializeField]
-    private float _slashDuration = .10f;
+
 
     [Header(" ")]
 
-    private Rigidbody2D _rb;
+    public Rigidbody2D _rb;
 
-    private PlayerState _state = PlayerState.MoveState; //is there a reason why this is public?
+    private PlayerState _state = PlayerState.MoveState;
 
     Vector2 clickPos;
 
-    public Timer timerPrefab; //is there a reason why this is public?
+    public Timer timerPrefab;
     private Timer localTimer;
 
     private float distToGround;
 
     private bool _canSlash;
+
+    public bool testing = true;
+
+    [SerializeField]
+    [SerializeReference]
+    List<PlayerAction> actionList = new List<PlayerAction>{
+        new MoveAction(),
+        new JumpAction(),
+        new SlashAction()
+    };
+
 
     void Start()
     {
@@ -52,7 +60,7 @@ public class PlayerController : MonoBehaviour
         updateState();
     }
 
-    void changeState(PlayerState s)
+    public void changeState(PlayerState s)
     {
         exitState(_state);
         _state = s;
@@ -64,10 +72,7 @@ public class PlayerController : MonoBehaviour
         switch(s)
         {
             case PlayerState.SlashState:
-                localTimer = Instantiate(timerPrefab);
-                localTimer.transform.parent = transform;
-                localTimer.SetDuration(_slashDuration);
-                localTimer.TimerStart();
+                DoAction(actionList[(int)PlayerActions.Slash]);
                 _canSlash = false;
                 break;
         }
@@ -78,8 +83,6 @@ public class PlayerController : MonoBehaviour
         switch(s)
         {
             case PlayerState.SlashState:
-                _rb.velocity = Vector2.zero;
-                Destroy(localTimer.gameObject);
                 break;
         }
     }
@@ -89,12 +92,14 @@ public class PlayerController : MonoBehaviour
         switch(_state)
         {
             case PlayerState.MoveState:
-                float moveDir = Input.GetAxis("Horizontal");
+                // float moveDir = Input.GetAxis("Horizontal");
                 // rb.velocity = new Vector2(MaxMagnitude(rb.velocity.x, moveDir * maxSpeed), rb.velocity.y);
-                _rb.velocity = new Vector2(moveDir * _speed, _rb.velocity.y);
+                // _rb.velocity = new Vector2(moveDir * _speed, _rb.velocity.y);
+                DoAction(actionList[(int)PlayerActions.Move]);
                 if (Input.GetButtonDown("Jump") && this.IsGrounded())
                 {
-                    _rb.velocity = new Vector2(_rb.velocity.x, _jumpSpeed);
+                    // _rb.velocity = new Vector2(_rb.velocity.x, _jumpSpeed);
+                    DoAction(actionList[(int)PlayerActions.Jump]);
                 }
                 
                 if(IsGrounded())
@@ -104,30 +109,33 @@ public class PlayerController : MonoBehaviour
                 
                 if (Input.GetMouseButtonDown(0) && _canSlash)
                 {
-                    Vector3 mousePos = Input.mousePosition;
-                    clickPos = transform.InverseTransformPoint(Camera.main.ScreenToWorldPoint(mousePos));
                     changeState(PlayerState.SlashState);
                 }
                 break;
             case PlayerState.SlashState:
-                _rb.velocity = clickPos.normalized * _slashForce;
-                if (localTimer.TimerFinished()) 
-                {
-                    changeState(PlayerState.MoveState);
-                }
                 break;
         }
     }
 
 
-    private bool IsGrounded()
+    public bool IsGrounded()
     {
         Vector3 bottomPos = new Vector3(transform.position.x, transform.position.y - distToGround - 0.05f, transform.position.z);
         return Physics2D.Raycast(bottomPos, -Vector2.up, 0.05f);
     }
 
+    public void DoAction(PlayerAction a)
+    {
+        StartCoroutine(a.DoAction(this));
+    }
 
     public enum PlayerState {
         MoveState, SlashState
     }
+
+    enum PlayerActions
+    {
+        Move, Jump, Slash
+    }
 }
+
