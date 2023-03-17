@@ -14,24 +14,9 @@ public class PlayerController : MonoBehaviour
         return f2;
     }
 
-
-    [Header("Movement Settings")]
-    [SerializeField]
-    private float _speed = 15.0f;
-    [SerializeField]
-    private float _jumpSpeed = 20.0f;
-
-
-    [Header(" ")]
-
-    public Rigidbody2D _rb;
+    public Rigidbody2D rb { get; private set; }
 
     private PlayerState _state = PlayerState.MoveState;
-
-    Vector2 clickPos;
-
-    public Timer timerPrefab;
-    private Timer localTimer;
 
     private float distToGround;
 
@@ -51,7 +36,7 @@ public class PlayerController : MonoBehaviour
     void Start()
     {
         distToGround = GetComponent<CapsuleCollider2D>().bounds.extents.y;
-        _rb = GetComponent<Rigidbody2D>();
+        rb = GetComponent<Rigidbody2D>();
     }
 
     // Update is called once per frame

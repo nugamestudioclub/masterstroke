@@ -10,7 +10,7 @@ public class MoveAction : PlayerAction
     public override IEnumerator Apply()
     {
         float moveDir = Input.GetAxis("Horizontal");
-        player._rb.velocity = new Vector2(moveDir * _speed, player._rb.velocity.y);
+        player.rb.velocity = new Vector2(moveDir * _speed, player.rb.velocity.y);
         yield break;
     }
 }

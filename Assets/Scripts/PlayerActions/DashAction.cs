@@ -22,14 +22,14 @@ public class DashAction : PlayerAction
     public override IEnumerator Apply()
     {
         // Debug.Log("Doing Slash Action");
-        player._rb.velocity = direction.normalized * _force;
+        player.rb.velocity = direction.normalized * _force;
         yield return new WaitForSeconds(_duration);
     }
 
     public override void OnFinish()
     {
         // Debug.Log("Finish Slash Action");
-        player._rb.velocity = Vector2.zero;
+        player.rb.velocity = Vector2.zero;
         player.changeState(PlayerController.PlayerState.MoveState);
     }
 }

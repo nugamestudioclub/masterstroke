@@ -21,7 +21,7 @@ public class SlashAction : PlayerAction
     public override void OnFinish()
     {
         // Debug.Log("Finish Slash Action");
-        player._rb.velocity = Vector2.zero;
+        player.rb.velocity = Vector2.zero;
         player.changeState(PlayerController.PlayerState.MoveState);
     }
 }
