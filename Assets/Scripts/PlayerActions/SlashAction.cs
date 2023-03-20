@@ -14,6 +14,7 @@ public class SlashAction : PlayerAction
 
     public override IEnumerator Apply()
     {
+        player.ChangeState(PlayerController.PlayerState.SlashState);
         player.StartCoroutine(hitboxAction.DoAction(player));
         yield return player.StartCoroutine(dashAction.DoAction(player));
     }
@@ -22,6 +23,6 @@ public class SlashAction : PlayerAction
     {
         // Debug.Log("Finish Slash Action");
         player.rb.velocity = Vector2.zero;
-        player.changeState(PlayerController.PlayerState.MoveState);
+        player.ChangeState(PlayerController.PlayerState.MoveState);
     }
 }

@@ -30,6 +30,6 @@ public class DashAction : PlayerAction
     {
         // Debug.Log("Finish Slash Action");
         player.rb.velocity = Vector2.zero;
-        player.changeState(PlayerController.PlayerState.MoveState);
+        player.ChangeState(PlayerController.PlayerState.MoveState);
     }
 }

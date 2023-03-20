@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerController : MonoBehaviour
+public class PlayerController : Entity
 {
 
     static float MaxMagnitude(float f1, float f2)
@@ -24,12 +24,21 @@ public class PlayerController : MonoBehaviour
 
     public bool testing = true;
 
+    [System.NonSerialized]
+    public Vector2 parryAngle;
+
+    [SerializeField]
+    // The maximum angle distance at which you can parry a hit, in degrees
+    private float _parryWidth = 30;
+
     [SerializeField]
     [SerializeReference]
     List<PlayerAction> actionList = new List<PlayerAction>{
         new MoveAction(),
         new JumpAction(),
-        new SlashAction()
+        new SlashAction(),
+        new ParryStanceAction(),
+        new ParryAction()
     };
 
 
@@ -42,28 +51,27 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        updateState();
+        UpdateState();
     }
 
-    public void changeState(PlayerState s)
+    public void ChangeState(PlayerState s)
     {
-        exitState(_state);
+        ExitState(_state);
         _state = s;
-        enterState(_state);
+        EnterState(_state);
     }
     
-    void enterState(PlayerState s)
+    void EnterState(PlayerState s)
     {
         switch(s)
         {
             case PlayerState.SlashState:
-                DoAction(actionList[(int)PlayerActions.Slash]);
                 _canSlash = false;
                 break;
         }
     }
 
-    void exitState(PlayerState s)
+    void ExitState(PlayerState s)
     {
         switch(s)
         {
@@ -72,18 +80,14 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    void updateState()
+    void UpdateState()
     {
         switch(_state)
         {
             case PlayerState.MoveState:
-                // float moveDir = Input.GetAxis("Horizontal");
-                // rb.velocity = new Vector2(MaxMagnitude(rb.velocity.x, moveDir * maxSpeed), rb.velocity.y);
-                // _rb.velocity = new Vector2(moveDir * _speed, _rb.velocity.y);
                 DoAction(actionList[(int)PlayerActions.Move]);
                 if (Input.GetButtonDown("Jump") && this.IsGrounded())
                 {
-                    // _rb.velocity = new Vector2(_rb.velocity.x, _jumpSpeed);
                     DoAction(actionList[(int)PlayerActions.Jump]);
                 }
                 
@@ -94,14 +98,39 @@ public class PlayerController : MonoBehaviour
                 
                 if (Input.GetMouseButtonDown(0) && _canSlash)
                 {
-                    changeState(PlayerState.SlashState);
+                    DoAction(actionList[(int)PlayerActions.Slash]);
+                }
+
+                if (Input.GetMouseButtonDown(1))
+                {
+                    DoAction(actionList[(int)PlayerActions.ParryStance]);
                 }
                 break;
             case PlayerState.SlashState:
                 break;
+            case PlayerState.ParryState:
+                break;
         }
     }
 
+    public override void OnHit(Hitbox hitbox)
+    {
+        // This should be an overrideable function from a superclass
+        switch(_state)
+        {
+            case PlayerState.ParryState:
+                float hitboxRot = Mathf.Atan2(hitbox.direction.y, hitbox.direction.x) * Mathf.Rad2Deg;
+                float playerRot = Mathf.Atan2(parryAngle.y, parryAngle.x) * Mathf.Rad2Deg;
+                float diff = Mathf.Abs(hitboxRot - playerRot + 180) % 360;
+                if (diff < _parryWidth)
+                {
+                    DoAction(actionList[(int)PlayerActions.Parry]);
+                }
+                break;
+            default:
+                break;
+        }
+    }
 
     public bool IsGrounded()
     {
@@ -109,18 +138,18 @@ public class PlayerController : MonoBehaviour
         return Physics2D.Raycast(bottomPos, -Vector2.up, 0.05f);
     }
 
-    public void DoAction(PlayerAction a)
+    public void DoAction(PlayerAction a, params System.Object[] objs)
     {
-        StartCoroutine(a.DoAction(this));
+        StartCoroutine(a.DoAction(this, objs));
     }
 
     public enum PlayerState {
-        MoveState, SlashState
+        MoveState, SlashState, ParryState
     }
 
     enum PlayerActions
     {
-        Move, Jump, Slash
+        Move, Jump, Slash, ParryStance, Parry
     }
 }
 
