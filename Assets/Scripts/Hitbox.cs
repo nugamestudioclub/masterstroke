@@ -15,8 +15,6 @@ public class Hitbox : MonoBehaviour
     [SerializeField]
     public Vector2 direction;
 
-    private new BoxCollider2D collider;
-
     // Start is called before the first frame update
     void Start()
     {
