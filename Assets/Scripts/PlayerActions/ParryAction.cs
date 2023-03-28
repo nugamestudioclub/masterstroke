@@ -17,6 +17,5 @@ public class ParryAction : PlayerAction
             throw new System.InvalidCastException();
         }
         hitbox = (Hitbox)objs[0];
-        Object.Destroy(hitbox);
     }
 }

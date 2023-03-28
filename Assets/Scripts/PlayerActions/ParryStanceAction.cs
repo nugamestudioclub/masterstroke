@@ -21,12 +21,20 @@ public class ParryStanceAction : PlayerAction
 
     public override IEnumerator Apply()
     {
-        yield return new WaitForSeconds(_duration);
+        yield return player.StartCoroutine(ParryStance());   
     }
 
     public override void OnFinish()
     {
         Debug.Log("End Parry Stance");
         player.ChangeState(PlayerController.PlayerState.MoveState);
+        
     }
+
+    // For use for manual cancelling
+    private IEnumerator ParryStance()
+    {
+        yield return new WaitForSeconds(_duration);
+    }
+
 }

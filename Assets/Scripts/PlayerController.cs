@@ -16,7 +16,7 @@ public class PlayerController : Entity
 
     public Rigidbody2D rb { get; private set; }
 
-    private PlayerState _state = PlayerState.MoveState;
+    public PlayerState state { get; private set; } = PlayerState.MoveState; 
 
     private float distToGround;
 
@@ -56,9 +56,9 @@ public class PlayerController : Entity
 
     public void ChangeState(PlayerState s)
     {
-        ExitState(_state);
-        _state = s;
-        EnterState(_state);
+        ExitState(state);
+        state = s;
+        EnterState(state);
     }
     
     void EnterState(PlayerState s)
@@ -82,7 +82,7 @@ public class PlayerController : Entity
 
     void UpdateState()
     {
-        switch(_state)
+        switch(state)
         {
             case PlayerState.MoveState:
                 DoAction(actionList[(int)PlayerActions.Move]);
@@ -116,31 +116,52 @@ public class PlayerController : Entity
     public override void OnHit(Hitbox hitbox)
     {
         // This should be an overrideable function from a superclass
-        switch(_state)
+        if (checkParry(hitbox))
         {
-            case PlayerState.ParryState:
-                float hitboxRot = Mathf.Atan2(hitbox.direction.y, hitbox.direction.x) * Mathf.Rad2Deg;
-                float playerRot = Mathf.Atan2(parryAngle.y, parryAngle.x) * Mathf.Rad2Deg;
-                float diff = Mathf.Abs(hitboxRot - playerRot + 180) % 360;
-                if (diff < _parryWidth)
-                {
-                    DoAction(actionList[(int)PlayerActions.Parry]);
-                }
-                break;
-            default:
-                break;
+            Debug.Log("Parried");
+            DoAction(actionList[(int)PlayerActions.Parry], hitbox);
         }
+        else
+        {
+            Debug.Log("Player Hit");
+        }
+    }
+
+    private bool checkParry(Hitbox hitbox)
+    {
+        if (state == PlayerState.ParryState && hitbox.GetOwnerType() == EntityType.Enemy)
+        {
+            float hitboxRot = Mathf.Atan2(hitbox.direction.y, hitbox.direction.x) * Mathf.Rad2Deg;
+            float playerRot = Mathf.Atan2(parryAngle.y, parryAngle.x) * Mathf.Rad2Deg;
+            float diff = Mathf.Abs(hitboxRot - playerRot - 180) % 360;
+            // Debug.Log(hitboxRot);
+            // Debug.Log(playerRot);
+            // Debug.Log(diff);
+            return diff < _parryWidth;
+        }
+        return false;
     }
 
     public bool IsGrounded()
     {
         Vector3 bottomPos = new Vector3(transform.position.x, transform.position.y - distToGround - 0.05f, transform.position.z);
-        return Physics2D.Raycast(bottomPos, -Vector2.up, 0.05f);
+        foreach (RaycastHit2D raycastHit in Physics2D.RaycastAll(bottomPos, -Vector2.up, 0.05f)) {
+            if (!raycastHit.collider.isTrigger)
+            {
+                return true;
+            }
+        }
+        return false;
     }
 
     public void DoAction(PlayerAction a, params System.Object[] objs)
     {
         StartCoroutine(a.DoAction(this, objs));
+    }
+
+    public override EntityType GetEntityType()
+    {
+        return EntityType.Player;
     }
 
     public enum PlayerState {
