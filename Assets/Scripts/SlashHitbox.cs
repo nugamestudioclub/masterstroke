@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class EnemyHitbox : MonoBehaviour
+public class SlashHitbox : MonoBehaviour
 {
     // Start is called before the first frame update
     void Start()
@@ -16,18 +16,16 @@ public class EnemyHitbox : MonoBehaviour
         
     }
 
+    /*
     // On collision
     private void OnTriggerEnter2D(Collider2D other)
     {
-        Debug.Log(other.name);
-        if (other.name == "SlashHitbox")
+        //Debug.Log(other.name);
+        // If this slash hit an enemy
+        if (other.name == "EnemyHitbox")
         {
-            this.Hit();
+            other.gameObject.GetComponent<EnemyHitbox>().Hit();
         }
     }
-
-    public void Hit()
-    {
-        GetComponentInParent<EnemyBehavior>().GetHit();
-    }
+    */
 }

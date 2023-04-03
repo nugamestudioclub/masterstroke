@@ -88,7 +88,12 @@ public class EnemyBehavior : MonoBehaviour
             }
         }
         return false;
-    }   
+    }
+    
+    public void GetHit()
+    {
+        Debug.Log("Ouch");
+    }
 
 
 }
