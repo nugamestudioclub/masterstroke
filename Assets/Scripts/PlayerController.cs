@@ -131,9 +131,10 @@ public class PlayerController : Entity
     {
         if (state == PlayerState.ParryState && hitbox.GetOwnerType() == EntityType.Enemy)
         {
-            float hitboxRot = Mathf.Atan2(hitbox.direction.y, hitbox.direction.x) * Mathf.Rad2Deg;
+            Vector2 enemyToPlayer = hitbox.position - (Vector2) transform.position;
+            float hitboxRot = Mathf.Atan2(enemyToPlayer.y, enemyToPlayer.x) * Mathf.Rad2Deg;
             float playerRot = Mathf.Atan2(parryAngle.y, parryAngle.x) * Mathf.Rad2Deg;
-            float diff = Mathf.Abs(hitboxRot - playerRot - 180) % 360;
+            float diff = Mathf.Abs(hitboxRot - playerRot) % 360;
             // Debug.Log(hitboxRot);
             // Debug.Log(playerRot);
             // Debug.Log(diff);

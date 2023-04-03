@@ -12,13 +12,13 @@ public class Hitbox : MonoBehaviour
 {
     [SerializeField]
     Entity owner;
-    [SerializeField]
-    public Vector2 direction;
+
+    public Vector2 position { get; private set; }
 
     // Start is called before the first frame update
     void Start()
     {
-       
+        position = owner.transform.position;
     }
 
     // Update is called once per frame
