@@ -16,13 +16,14 @@ public class PlayerController : Entity
 
     public Rigidbody2D rb { get; private set; }
 
-    public PlayerState state { get; private set; } = PlayerState.MoveState; 
+    public PlayerState state { get; private set; } 
 
     private float distToGround;
 
     private bool _canSlash;
 
-    public bool testing = true;
+    [field: SerializeField]
+    public Hitbox slashHitbox { get; private set; }
 
     [System.NonSerialized]
     public Vector2 parryAngle;
@@ -30,22 +31,12 @@ public class PlayerController : Entity
     [SerializeField]
     // The maximum angle distance at which you can parry a hit, in degrees
     private float _parryWidth = 30;
-
-    [SerializeField]
-    [SerializeReference]
-    List<PlayerAction> actionList = new List<PlayerAction>{
-        new MoveAction(),
-        new JumpAction(),
-        new SlashAction(),
-        new ParryStanceAction(),
-        new ParryAction()
-    };
-
-
+    
     void Start()
     {
         distToGround = GetComponent<CapsuleCollider2D>().bounds.extents.y;
         rb = GetComponent<Rigidbody2D>();
+        EnterState(PlayerState.MoveState);
     }
 
     // Update is called once per frame
@@ -65,6 +56,9 @@ public class PlayerController : Entity
     {
         switch(s)
         {
+            case PlayerState.MoveState:
+                gameObject.AddComponent<PlayerMoveBehaviour>();
+                break;
             case PlayerState.SlashState:
                 _canSlash = false;
                 break;
@@ -75,6 +69,9 @@ public class PlayerController : Entity
     {
         switch(s)
         {
+            case PlayerState.MoveState:
+                Destroy(gameObject.GetComponent<PlayerMoveBehaviour>());
+                break;
             case PlayerState.SlashState:
                 break;
         }
@@ -85,10 +82,9 @@ public class PlayerController : Entity
         switch(state)
         {
             case PlayerState.MoveState:
-                DoAction(actionList[(int)PlayerActions.Move]);
                 if (Input.GetButtonDown("Jump") && this.IsGrounded())
                 {
-                    DoAction(actionList[(int)PlayerActions.Jump]);
+                    gameObject.AddComponent<PlayerJumpBehaviour>();
                 }
                 
                 if(IsGrounded())
@@ -98,12 +94,12 @@ public class PlayerController : Entity
                 
                 if (Input.GetMouseButtonDown(0) && _canSlash)
                 {
-                    DoAction(actionList[(int)PlayerActions.Slash]);
+                    gameObject.AddComponent<PlayerSlashBehaviour>();
                 }
 
                 if (Input.GetMouseButtonDown(1))
                 {
-                    DoAction(actionList[(int)PlayerActions.ParryStance]);
+                    gameObject.AddComponent<PlayerParryStanceBehaviour>();
                 }
                 break;
             case PlayerState.SlashState:
@@ -119,7 +115,7 @@ public class PlayerController : Entity
         if (checkParry(hitbox))
         {
             Debug.Log("Parried");
-            DoAction(actionList[(int)PlayerActions.Parry], hitbox);
+            gameObject.AddComponent<PlayerParryBehaviour>();
         }
         else
         {
@@ -155,11 +151,6 @@ public class PlayerController : Entity
         return false;
     }
 
-    public void DoAction(PlayerAction a, params System.Object[] objs)
-    {
-        StartCoroutine(a.DoAction(this, objs));
-    }
-
     public override EntityType GetEntityType()
     {
         return EntityType.Player;
@@ -169,9 +160,5 @@ public class PlayerController : Entity
         MoveState, SlashState, ParryState
     }
 
-    enum PlayerActions
-    {
-        Move, Jump, Slash, ParryStance, Parry
-    }
 }
 
