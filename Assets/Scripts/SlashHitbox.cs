@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class SlashHitbox : MonoBehaviour
 {
+
+    [SerializeField] private GameObject PaintStroke;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -28,4 +31,13 @@ public class SlashHitbox : MonoBehaviour
         }
     }
     */
+
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if(collision.gameObject.tag == "Enemy")
+        {
+            Instantiate(PaintStroke, collision.gameObject.transform.position, Quaternion.Euler(transform.localRotation.eulerAngles));
+        }
+    }
 }
