@@ -11,7 +11,7 @@ struct Tags
 public class Hitbox : MonoBehaviour
 {
     [SerializeField]
-    Entity owner;
+    public Entity owner;
 
     public Vector2 position { get; private set; }
 
