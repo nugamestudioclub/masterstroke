@@ -3,25 +3,33 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class EnemyBehavior : MonoBehaviour
-{
+{    
     [SerializeField]
     bool blind = false;
 
     [SerializeField]
-    int sightRadius = 10;
+    int sightRadius = 30;
 
     [SerializeField]
     bool facingLeft = true;
 
+    private bool rangedEnemy = false;
+
     private static int numSightLines = 50;
 
     private float distToSide;
+
+    private bool shooting = false;
 
 
     // Start is called before the first frame update
     void Start()
     {
         distToSide = GetComponent<CapsuleCollider2D>().bounds.extents.x;
+        if (GetComponentInChildren<EnemyShoot>())
+        {
+            rangedEnemy = true;
+        }
     }
 
     // Update is called once per frame
@@ -35,6 +43,19 @@ public class EnemyBehavior : MonoBehaviour
         if (see)
         {
             //Debug.Log("Player seen");
+            if (rangedEnemy && !shooting)
+            {
+                GetComponentInChildren<EnemyShoot>().ShootRepeat();
+                shooting = true;
+            }
+        }
+        else
+        {
+            if (rangedEnemy)
+            {
+                GetComponentInChildren<EnemyShoot>().ShootStop();
+                shooting = false;
+            }
         }
 
     }
@@ -93,6 +114,7 @@ public class EnemyBehavior : MonoBehaviour
     public void GetHit()
     {
         Debug.Log("Ouch");
+        Destroy(gameObject);
     }
 
 

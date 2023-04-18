@@ -39,7 +39,7 @@ public class EnemyShoot : MonoBehaviour
 
     void Start()
     {
-        InvokeRepeating("Shoot", shootingStartDelay, delayBetweenShots);
+        //InvokeRepeating("Shoot", shootingStartDelay, delayBetweenShots);
     }
 
 
@@ -51,6 +51,16 @@ public class EnemyShoot : MonoBehaviour
 
         bulletRB.velocity = shootingPoint.transform.right * bulletSpeed + shootingPoint.transform.up * Random.Range(bulletDownOffset, bulletUpOffset);
 
+    }
+
+    public void ShootRepeat()
+    {
+        InvokeRepeating("Shoot", shootingStartDelay, delayBetweenShots);
+    }
+
+    public void ShootStop()
+    {
+        CancelInvoke();
     }
 
 
