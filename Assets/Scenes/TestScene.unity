@@ -179,6 +179,10 @@ PrefabInstance:
       propertyPath: m_LocalPosition.y
       value: -6
       objectReference: {fileID: 0}
+    - target: {fileID: 1956673700760077317, guid: 3d82d06323bd90048807f0abcf1b228d, type: 3}
+      propertyPath: facingLeft
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3057494319636311510, guid: 3d82d06323bd90048807f0abcf1b228d, type: 3}
       propertyPath: playerRB
       value: 

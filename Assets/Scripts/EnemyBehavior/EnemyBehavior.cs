@@ -21,6 +21,8 @@ public class EnemyBehavior : MonoBehaviour
 
     private bool shooting = false;
 
+    private bool playerSeen = false;
+
 
     // Start is called before the first frame update
     void Start()
@@ -43,6 +45,7 @@ public class EnemyBehavior : MonoBehaviour
         if (see)
         {
             //Debug.Log("Player seen");
+            playerSeen = true;
             if (rangedEnemy && !shooting)
             {
                 GetComponentInChildren<EnemyShoot>().ShootRepeat();
@@ -115,6 +118,14 @@ public class EnemyBehavior : MonoBehaviour
     {
         Debug.Log("Ouch");
         Destroy(gameObject);
+    }
+
+    public void TurnLeft(bool left)
+    {
+        if (playerSeen)
+        {
+            this.facingLeft = left;
+        }
     }
 
 

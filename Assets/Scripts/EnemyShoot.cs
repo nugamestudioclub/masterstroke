@@ -83,12 +83,12 @@ public class EnemyShoot : MonoBehaviour
         if (playerRB.position.x > enemyRB.position.x)
         {
             flipYFalse();
-
+            this.gameObject.transform.parent.GetComponentInParent<EnemyBehavior>().TurnLeft(false);
         }
         else
         {
             flipYTrue();
-
+            this.gameObject.transform.parent.GetComponentInParent<EnemyBehavior>().TurnLeft(true);
         }
 
     }
