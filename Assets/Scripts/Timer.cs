@@ -6,6 +6,7 @@ public class Timer : MonoBehaviour
 {
 
     public float timerDuration;
+    public float currentTime;
 
     bool active = false;
 
@@ -20,13 +21,24 @@ public class Timer : MonoBehaviour
     {
         if (active)
         {
-            timerDuration -= Time.deltaTime;
+            currentTime += Time.deltaTime;
+        }
+
+        if (TimerFinished())
+        {
+            active = false;
         }
     }
 
     public void TimerStart()
     {
         active = true;
+    }
+
+    public void Reset()
+    {
+        currentTime = 0;
+        TimerStart();
     }
 
     public void SetDuration(float f)
@@ -36,6 +48,6 @@ public class Timer : MonoBehaviour
 
     public bool TimerFinished()
     {
-        return timerDuration <= 0;
+        return currentTime >= timerDuration;
     }
 }

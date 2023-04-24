@@ -68,42 +68,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5e301af646a9f1949b80e3355bac17de, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  testing: 1
-  actionList:
-  - rid: 5703747738500071435
-  - rid: 5703747738500071436
-  - rid: 5703747738500071437
-  references:
-    version: 2
-    RefIds:
-    - rid: 5703747738500071435
-      type: {class: MoveAction, ns: , asm: Assembly-CSharp}
-      data:
-        _speed: 15
-    - rid: 5703747738500071436
-      type: {class: JumpAction, ns: , asm: Assembly-CSharp}
-      data:
-        _jumpSpeed: 20
-    - rid: 5703747738500071437
-      type: {class: SlashAction, ns: , asm: Assembly-CSharp}
-      data:
-        dashAction:
-          rid: 5703747738500071438
-        hitboxAction:
-          rid: 5703747738500071439
-    - rid: 5703747738500071438
-      type: {class: DashClickAction, ns: , asm: Assembly-CSharp}
-      data:
-        direction: {x: 0, y: 0}
-        _force: 25
-        _duration: 0.1
-    - rid: 5703747738500071439
-      type: {class: HitboxClickAction, ns: , asm: Assembly-CSharp}
-      data:
-        clickPos: {x: 0, y: 0, z: 0}
-        direction: {x: 0, y: 0}
-        attackPrefab: {fileID: 6769722047634044497, guid: bc97d71b14554af4aaba71def9cc1e20, type: 3}
-        _duration: 0.1
+  <slashHitbox>k__BackingField: {fileID: 4890647635961335942, guid: bc97d71b14554af4aaba71def9cc1e20, type: 3}
+  _parryWidth: 30
 --- !u!70 &5988202328447360764
 CapsuleCollider2D:
   m_ObjectHideFlags: 0

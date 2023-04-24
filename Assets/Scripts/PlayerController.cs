@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerController : MonoBehaviour
+public class PlayerController : Entity
 {
 
     static float MaxMagnitude(float f1, float f2)
@@ -16,75 +16,75 @@ public class PlayerController : MonoBehaviour
 
     public Rigidbody2D rb { get; private set; }
 
-    private PlayerState _state = PlayerState.MoveState;
+    public PlayerState state { get; private set; } 
 
     private float distToGround;
 
     private bool _canSlash;
 
-    public bool testing = true;
+    [field: SerializeField]
+    public Hitbox slashHitbox { get; private set; }
+
+    [System.NonSerialized]
+    public Vector2 parryAngle;
 
     [SerializeField]
-    [SerializeReference]
-    List<PlayerAction> actionList = new List<PlayerAction>{
-        new MoveAction(),
-        new JumpAction(),
-        new SlashAction()
-    };
-
-
+    // The maximum angle distance at which you can parry a hit, in degrees
+    private float _parryWidth = 30;
+    
     void Start()
     {
         distToGround = GetComponent<CapsuleCollider2D>().bounds.extents.y;
         rb = GetComponent<Rigidbody2D>();
+        EnterState(PlayerState.MoveState);
     }
 
     // Update is called once per frame
     void Update()
     {
-        updateState();
+        UpdateState();
     }
 
-    public void changeState(PlayerState s)
+    public void ChangeState(PlayerState s)
     {
-        exitState(_state);
-        _state = s;
-        enterState(_state);
+        ExitState(state);
+        state = s;
+        EnterState(state);
     }
     
-    void enterState(PlayerState s)
+    void EnterState(PlayerState s)
     {
         switch(s)
         {
+            case PlayerState.MoveState:
+                gameObject.AddComponent<PlayerMoveBehaviour>();
+                break;
             case PlayerState.SlashState:
-                DoAction(actionList[(int)PlayerActions.Slash]);
                 _canSlash = false;
                 break;
         }
     }
 
-    void exitState(PlayerState s)
+    void ExitState(PlayerState s)
     {
         switch(s)
         {
+            case PlayerState.MoveState:
+                Destroy(gameObject.GetComponent<PlayerMoveBehaviour>());
+                break;
             case PlayerState.SlashState:
                 break;
         }
     }
 
-    void updateState()
+    void UpdateState()
     {
-        switch(_state)
+        switch(state)
         {
             case PlayerState.MoveState:
-                // float moveDir = Input.GetAxis("Horizontal");
-                // rb.velocity = new Vector2(MaxMagnitude(rb.velocity.x, moveDir * maxSpeed), rb.velocity.y);
-                // _rb.velocity = new Vector2(moveDir * _speed, _rb.velocity.y);
-                DoAction(actionList[(int)PlayerActions.Move]);
                 if (Input.GetButtonDown("Jump") && this.IsGrounded())
                 {
-                    // _rb.velocity = new Vector2(_rb.velocity.x, _jumpSpeed);
-                    DoAction(actionList[(int)PlayerActions.Jump]);
+                    gameObject.AddComponent<PlayerJumpBehaviour>();
                 }
                 
                 if(IsGrounded())
@@ -94,33 +94,71 @@ public class PlayerController : MonoBehaviour
                 
                 if (Input.GetMouseButtonDown(0) && _canSlash)
                 {
-                    changeState(PlayerState.SlashState);
+                    gameObject.AddComponent<PlayerSlashBehaviour>();
+                }
+
+                if (Input.GetMouseButtonDown(1))
+                {
+                    gameObject.AddComponent<PlayerParryStanceBehaviour>();
                 }
                 break;
             case PlayerState.SlashState:
                 break;
+            case PlayerState.ParryState:
+                break;
         }
     }
 
+    public override void OnHit(Hitbox hitbox)
+    {
+        // This should be an overrideable function from a superclass
+        if (checkParry(hitbox))
+        {
+            Debug.Log("Parried");
+            gameObject.AddComponent<PlayerParryBehaviour>();
+        }
+        else
+        {
+            Debug.Log("Player Hit");
+        }
+    }
+
+    private bool checkParry(Hitbox hitbox)
+    {
+        if (state == PlayerState.ParryState && hitbox.GetOwnerType() == EntityType.Enemy)
+        {
+            Vector2 enemyToPlayer = hitbox.position - (Vector2) transform.position;
+            float hitboxRot = Mathf.Atan2(enemyToPlayer.y, enemyToPlayer.x) * Mathf.Rad2Deg;
+            float playerRot = Mathf.Atan2(parryAngle.y, parryAngle.x) * Mathf.Rad2Deg;
+            float diff = Mathf.Abs(hitboxRot - playerRot) % 360;
+            // Debug.Log(hitboxRot);
+            // Debug.Log(playerRot);
+            // Debug.Log(diff);
+            return diff < _parryWidth;
+        }
+        return false;
+    }
 
     public bool IsGrounded()
     {
         Vector3 bottomPos = new Vector3(transform.position.x, transform.position.y - distToGround - 0.05f, transform.position.z);
-        return Physics2D.Raycast(bottomPos, -Vector2.up, 0.05f);
+        foreach (RaycastHit2D raycastHit in Physics2D.RaycastAll(bottomPos, -Vector2.up, 0.05f)) {
+            if (!raycastHit.collider.isTrigger)
+            {
+                return true;
+            }
+        }
+        return false;
     }
 
-    public void DoAction(PlayerAction a)
+    public override EntityType GetEntityType()
     {
-        StartCoroutine(a.DoAction(this));
+        return EntityType.Player;
     }
 
     public enum PlayerState {
-        MoveState, SlashState
+        MoveState, SlashState, ParryState
     }
 
-    enum PlayerActions
-    {
-        Move, Jump, Slash
-    }
 }
 
