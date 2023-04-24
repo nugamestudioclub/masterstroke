@@ -21,6 +21,7 @@ public class PlayerSlashBehaviour : EntityBehaviour
     void Start()
     {
         _player = GetComponent<PlayerController>();
+        _player.ChangeState(PlayerController.PlayerState.SlashState);
         _hitboxPrefab = _player.slashHitbox;
         _rb = _player.rb;
 
