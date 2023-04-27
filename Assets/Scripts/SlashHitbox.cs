@@ -38,6 +38,7 @@ public class SlashHitbox : MonoBehaviour
         if(collision.gameObject.tag == "Enemy")
         {
             Instantiate(PaintStroke, collision.gameObject.transform.position, Quaternion.Euler(transform.localRotation.eulerAngles));
+            Destroy(collision.gameObject);
         }
     }
 }

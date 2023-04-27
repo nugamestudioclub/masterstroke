@@ -47,6 +47,8 @@ public class EnemyShoot : MonoBehaviour
     {
         GameObject bullet = Instantiate(bulletPrefab, shootingPoint.transform.position, shootingPoint.transform.rotation);
 
+        bullet.GetComponent<Hitbox>().owner = GetComponentInParent<Entity>();
+
         Rigidbody2D bulletRB = bullet.GetComponent<Rigidbody2D>();
 
         bulletRB.velocity = shootingPoint.transform.right * bulletSpeed + shootingPoint.transform.up * Random.Range(bulletDownOffset, bulletUpOffset);

@@ -22,7 +22,7 @@ public class EnemyHitbox : MonoBehaviour
         //Debug.Log(other.name);
         if (other.name == "SlashHitbox")
         {
-            this.Hit();
+            //this.Hit();
         }
     }
 

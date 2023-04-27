@@ -30,6 +30,14 @@ public class Hitbox : MonoBehaviour
     private void OnTriggerEnter2D(Collider2D other)
     {
         Debug.Log("Trigger Entered");
+        //Debug.Log(other);
+
+        if(other.tag == "Ground")
+        {
+            return;
+        }
+        //Debug.Log(this.name);
+
         Entity otherEntity = other.GetComponentInParent<Entity>();
 
         switch (owner.GetEntityType())

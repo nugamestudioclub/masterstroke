@@ -116,8 +116,10 @@ public class EnemyBehavior : MonoBehaviour
     
     public void GetHit()
     {
+        /*
         Debug.Log("Ouch");
         Destroy(gameObject);
+        */
     }
 
     public void TurnLeft(bool left)
